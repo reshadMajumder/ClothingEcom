@@ -1,0 +1,6 @@
+Owl Carousel Jquery Plugin is used for Homepage Slider
+
+
+ &&
+
+ Mini Slider under product details page
