@@ -1,8 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { API_URL } from '../data/Api';
 
 function FilterBy() {
   const [showCount, setShowCount] = useState('9');
   const [sortBy, setSortBy] = useState('menu_order');
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_URL}category/`);
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   return (
     <div className="toolbox d-flex align-items-center mb-3 gap-2 border p-3">
@@ -35,6 +51,19 @@ function FilterBy() {
             <option value="popularity">Sort by popularity</option>
             <option value="price">Sort by price: low to high</option>
             <option value="price-desc">Sort by price: high to low</option>
+          </select>
+        </div>
+      </div>
+      <div className="d-flex flex-wrap">
+        <div className="d-flex align-items-center flex-nowrap">
+          <p className="mb-0 font-13 text-nowrap">Categories:</p>
+          <select className="form-select ms-3 rounded-0">
+            <option value="">All</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
       </div>

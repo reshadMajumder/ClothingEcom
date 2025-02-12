@@ -85,6 +85,7 @@ function Navbar() {
                   <li><Link to="/man">Man</Link></li>
                   <li><Link to="/women">Women</Link></li>
                   <li><Link to="/accessories">Accessories</Link></li>
+                  <li><Link to="/others">Others</Link></li>
                 </ul>
               </div>
             </div>
@@ -177,11 +178,11 @@ function Navbar() {
                         </div>
                       )}
                     </li>
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                       <Link to="/login" className="nav-link cart-link">
                         <FontAwesomeIcon icon={faUser} className="text-white" />
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 </nav>
               </div>

@@ -11,6 +11,9 @@ import ShoppingCart from './pages/ShoppingCart';
 import Checkout from './pages/Checkout';
 import CheckoutSuccess from './components/CheckoutSuccess';
 import ProductDetails from './pages/ProductDetails';
+import Woman from './pages/Woman';
+import Accesories from './pages/Accesories';
+import Others from './pages/Others';
 
 function App() {
   return (
@@ -20,6 +23,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/man" element={<Man />} />
+          <Route path="/women" element={<Woman />} />
+          <Route path="/accessories" element={<Accesories />} />
+          <Route path="/others" element={<Others />} />
           <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout-success" element={<CheckoutSuccess />} />

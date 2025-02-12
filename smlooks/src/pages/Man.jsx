@@ -1,37 +1,52 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import FilterBy from '../components/FilterBy'
 import ProductCard from '../components/ProductCard'
+import { API_URL } from '../data/Api'
+import { API_URL_MEDIA } from '../data/Api'
+
 
 function Man() {
-    const products = [
-        {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-          id: 1,
-          name: "White Polo Shirt",
-          price: "48.00",
-          image: "assets/images/products/02.jpg"
-        },
-        {
-          id: 2,
-          name: "White Polo Shirt",
-          price: "48.00",
-          image: "assets/images/products/01.jpg"
-        },
-        {
-          id: 3,
-          name: "White Polo Shirt",
-          price: "48.00",
-          image: "assets/images/products/04.jpg"
-        },
-        {
-          id: 4,
-          name: "White Polo Shirt",
-          price: "48.00",
-          image: "assets/images/products/01.jpg"
-        },
-    
-        // Add more products as needed
-      ];
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${API_URL}man-product/`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setProducts(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError('Failed to load products. Please try again later.');
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger m-3" role="alert">
+        {error}
+      </div>
+    );
+  }
     return (
         
         <>

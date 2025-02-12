@@ -24,7 +24,7 @@ class ProductColor(models.Model):
     
 
 class Product(models.Model):
-    name = models.CharField(max_length=200, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     PRODUCT_TYPE_CHOICES = (
         ('man', 'Man'),
@@ -32,21 +32,29 @@ class Product(models.Model):
         ('accessories', 'Accessories'),
         ('others', 'Others'),
     )
-    product_type = models.CharField(max_length=200, choices=PRODUCT_TYPE_CHOICES, null=True, blank=True)
+    product_type = models.CharField(max_length=200, choices=PRODUCT_TYPE_CHOICES, null=True, blank=True, db_index=True)
     stock = models.IntegerField(null=True, blank=True)
     images = models.ManyToManyField(ProductImages)
     sizes = models.ManyToManyField(ProductSize)
     colors = models.ManyToManyField(ProductColor)
     description = models.TextField(null=True, blank=True)
-    selling_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    selling_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, db_index=True)
     original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     discount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_trending = models.BooleanField(default=False)
+    is_trending = models.BooleanField(default=False, db_index=True)
+
     def __str__(self):
         return f'{self.name} - {self.category.name} - {self.product_type} - {self.stock}'
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['product_type', 'is_active']),
+            models.Index(fields=['is_trending', 'is_active']),
+        ]
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
@@ -80,10 +88,15 @@ class BannerImage(models.Model):
     image = models.ImageField(upload_to='banners/', null=True, blank=True)
     heading = models.CharField(max_length=200, null=True, blank=True)
     sub_heading = models.CharField(max_length=200, null=True, blank=True)
-    def __str__(self):
-        return self.image.url
+
     
 class Banner(models.Model):
     image = models.ManyToManyField(BannerImage)
-    def __str__(self):
-        return self.image.url
+
+class ShopDetails(models.Model):
+    shop_name = models.CharField(max_length=200, null=True, blank=True)
+    shop_address = models.TextField(null=True, blank=True)
+    shop_phone = models.CharField(max_length=200, null=True, blank=True)
+    shop_email = models.EmailField(null=True, blank=True)
+    shop_logo = models.ImageField(upload_to='shop_logo/', null=True, blank=True)
+    working_hours = models.CharField(max_length=200, null=True, blank=True)

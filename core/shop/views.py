@@ -4,53 +4,69 @@ from rest_framework.decorators import api_view
 
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Product, Banner, Category, Order, OrderItem
-from .serializers import ProductSerializer, BannerSerializer, CategorySerializer, OrderSerializer, ProductDetailSerializer
+from .models import Product, Banner, Category, Order, ShopDetails
+from .serializers import ProductSerializer, BannerSerializer, CategorySerializer, OrderSerializer, ProductDetailSerializer, ShopDetailsSerializer   
 from django.db import transaction
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from django.db.models import Prefetch
 
 # Create your views here.
 
 @api_view(['GET'])
 def TrandingProduct(request):
-    if request.method == 'GET':
-        tranding_products = Product.objects.filter(is_trending=True)
-        serializer = ProductSerializer(tranding_products, many=True)
-        return Response(serializer.data)
+    products = Product.objects.select_related('category').prefetch_related(
+        'images',
+        'sizes',
+        'colors'
+    ).filter(is_trending=True, is_active=True)
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
 
+@cache_page(60 * 60)
 @api_view(['GET'])
 def banner(request):
-    if request.method == 'GET':
-        banners = Banner.objects.all()
-        serializer = BannerSerializer(banners, many=True)
-        return Response(serializer.data)
+    banners = Banner.objects.prefetch_related('image').all()
+    serializer = BannerSerializer(banners, many=True)
+    return Response(serializer.data)
 
+@cache_page(60 * 60 * 6)
 @api_view(['GET'])
 def category(request):
-    if request.method == 'GET':
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def product(request):
-    if request.method == 'GET':
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+    products = Product.objects.select_related('category').prefetch_related(
+        'images',
+        'sizes',
+        'colors'
+    ).filter(is_active=True)
+    
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def man_product(request):
-    if request.method == 'GET':
-        products = Product.objects.filter(product_type='man')
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+    products = Product.objects.select_related('category').prefetch_related(
+        'images',
+        'sizes',
+        'colors'
+    ).filter(product_type='man', is_active=True)
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def woman_product(request):
-    if request.method == 'GET':
-        products = Product.objects.filter(product_type='woman')
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+    products = Product.objects.select_related('category').prefetch_related(
+        'images',
+        'sizes',
+        'colors'
+    ).filter(product_type='woman', is_active=True)
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])  
 def accessories_product(request):
@@ -69,10 +85,19 @@ def others_product(request):
 
 @api_view(['GET'])
 def product_detail(request, pk):
-    if request.method == 'GET':
-        product = Product.objects.get(id=pk)
-        serializer = ProductDetailSerializer(product)
-        return Response(serializer.data)
+    cache_key = f'product_detail_{pk}'
+    product = cache.get(cache_key)
+    
+    if product is None:
+        product = Product.objects.select_related('category').prefetch_related(
+            'images',
+            'sizes',
+            'colors'
+        ).get(id=pk)
+        cache.set(cache_key, product, timeout=60*30)  # Cache for 30 minutes
+    
+    serializer = ProductDetailSerializer(product)
+    return Response(serializer.data)
 
 
 @api_view(['GET', 'POST'])
@@ -131,3 +156,9 @@ def order(request):
                 {'error': 'Failed to create order', 'details': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+@api_view(['GET'])
+def shop_details(request):
+    shop_details = ShopDetails.objects.first()
+    serializer = ShopDetailsSerializer(shop_details)
+    return Response(serializer.data)
+

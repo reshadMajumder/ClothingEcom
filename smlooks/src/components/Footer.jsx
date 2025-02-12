@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchShopDetails } from '../data/Api';
 
 function Footer() {
+  const [shopDetails, setShopDetails] = useState(null);
+
+  useEffect(() => {
+    fetchShopDetails().then(setShopDetails);
+  }, []);
+
   return (
     <footer>
       <section className="py-5 border-top bg-light">
@@ -12,19 +19,19 @@ function Footer() {
                 <h5 className="mb-4 text-uppercase fw-bold">Contact Info</h5>
                 <div className="address mb-3">
                   <h6 className="mb-0 text-uppercase fw-bold">Address</h6>
-                  <p className="mb-0">Mirpur 11 , Bangladesh</p>
+                  <p className="mb-0">{shopDetails?.shop_address}</p>
                 </div>
                 <div className="phone mb-3">
                   <h6 className="mb-0 text-uppercase fw-bold">Phone</h6>
-                  <p className="mb-0">Mobile : +88-01XXXXXXXXXX</p>
+                  <p className="mb-0">{shopDetails?.shop_phone}</p>
                 </div>
                 <div className="email mb-3">
                   <h6 className="mb-0 text-uppercase fw-bold">Email</h6>
-                  <p className="mb-0">mail@example.com</p>
+                  <p className="mb-0">{shopDetails?.shop_email}</p>
                 </div>
                 <div className="working-days mb-3">
                   <h6 className="mb-0 text-uppercase fw-bold">WORKING DAYS</h6>
-                  <p className="mb-0">Mon - FRI / 9:30 AM - 6:30 PM</p>
+                  <p className="mb-0">{shopDetails?.working_hours}</p>
                 </div>
               </div>
             </div>
@@ -41,10 +48,14 @@ function Footer() {
                   <li className="mb-1">
                     <Link to="/accessories"><i className="bx bx-chevron-right"></i> Accessories</Link>
                   </li>
+                  <li className="mb-1">
+                    <Link to="/others"><i className="bx bx-chevron-right"></i> Others</Link>
+                  </li>
+
                 </ul>
               </div>
             </div>
-            <div className="col">
+            {/* <div className="col">
               <div className="footer-section4">
                 <h5 className="mb-4 text-uppercase fw-bold">Stay informed</h5>
                 <div className="subscribe">
@@ -58,7 +69,7 @@ function Footer() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

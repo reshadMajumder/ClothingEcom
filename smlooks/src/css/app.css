@@ -3406,3 +3406,36 @@ body.modal-open {
   }
 }
 
+/* Banner Slider Styles */
+.banner-slider {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-slider .item {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.banner-slider img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.slider-content {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
